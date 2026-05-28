@@ -1,0 +1,65 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+
+<h3 class="mb-4">Edit Admin Profile</h3>
+
+<div class="card shadow p-4">
+
+<form method="POST" id="adminProfileForm">
+{% csrf_token %}
+
+<div class="mb-3">
+    <label>Username</label>
+    <input type="text"
+           name="username"
+           value="{{request.user.username}}"
+           class="form-control"
+           required>
+</div>
+
+<div class="mb-3">
+    <label>Email</label>
+    <input type="email"
+           name="email"
+           id="email"
+           value="{{request.user.email}}"
+           class="form-control"
+           required>
+    <small id="emailError" class="text-danger" style="display:none;"></small>
+</div>
+
+<button type="submit" class="btn btn-dark">
+    Update Profile
+</button>
+
+<a href="/admin_dashboard/" class="btn btn-secondary">
+    Cancel
+</a>
+
+</form>
+
+</div>
+<br><br>
+<a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+    ← Back 
+</a>
+
+<script>
+document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
+    const emailField = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const email = emailField.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        e.preventDefault(); 
+        emailError.style.display = 'block';
+        emailError.textContent = 'Please enter a valid email address.';
+        emailField.focus();
+    } else {
+        emailError.style.display = 'none'; 
+    }
+});
+</script>
+
+{% endblock %}

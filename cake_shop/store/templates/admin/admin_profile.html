@@ -1,0 +1,17 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+
+<h3>Admin Profile</h3>
+
+<div class="card shadow p-4">
+    <p><b>Username:</b> {{ request.user.username }}</p>
+    <p><b>Email:</b> {{ request.user.email }}</p>
+</div>
+
+<br>
+
+<a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+    ← Back 
+</a>
+
+{% endblock %}

@@ -1,0 +1,391 @@
+{% block content %}
+
+<script>
+  (function() {
+    if (!document.querySelector('meta[name="viewport"]')) {
+      var m = document.createElement('meta');
+      m.name = 'viewport';
+      m.content = 'width=device-width, initial-scale=1.0';
+      document.head.appendChild(m);
+    }
+  })();
+</script>
+
+<style>
+* {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+.main-content { flex: 1; background: #fffaf7; }
+
+/* ── HEADER ── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-bottom: 1px solid #f0e8e0;
+}
+
+.logo { font-size: 24px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; text-decoration: none; flex-shrink: 0; }
+.logo span { color: #d4845a; }
+
+/* ── DESKTOP NAV ── */
+.nav-right { display: flex; align-items: center; gap: 12px; }
+
+.username-display {
+  font-weight: 600; color: #d4845a;
+  padding: 7px 14px;
+  background: #fff8f5; border-radius: 50px;
+  border: 1px solid #f0e8e0; font-size: 13px;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.username-display img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+
+.nav-item {
+  position: relative; cursor: pointer;
+  font-weight: 500; font-size: 13px; color: #1a1a1a;
+  text-decoration: none; padding: 7px 14px;
+  border-radius: 50px; transition: all 0.2s; white-space: nowrap;
+}
+.nav-item:hover { background: #fffaf7; color: #d4845a; }
+
+.dropdown { position: relative; padding-bottom: 10px; }
+.dropdown-menu {
+  display: none; position: absolute; top: 100%; right: 0;
+  margin-top: 4px; background: #fff; min-width: 180px;
+  border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border: 1px solid #f0e8e0; overflow: hidden; padding: 6px; z-index: 1001;
+}
+.dropdown-menu a {
+  display: block; padding: 10px 14px; text-decoration: none;
+  color: #1a1a1a; font-size: 13px; border-radius: 8px; transition: background 0.2s;
+}
+.dropdown-menu a:hover { background: #fffaf7; color: #d4845a; }
+.dropdown:hover .dropdown-menu { display: block; }
+
+.cart-badge {
+  background: #d4845a; color: white;
+  border-radius: 50%; padding: 1px 6px;
+  font-size: 11px; margin-left: 3px; font-weight: 700;
+}
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 6px; border: none; background: none;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: #1a1a1a; border-radius: 2px; transition: all 0.3s;
+}
+
+/* ── MOBILE NAV ── */
+.mobile-nav {
+  display: none; position: fixed;
+  top: 57px; left: 0; right: 0;
+  background: #fff; border-bottom: 1px solid #f0e8e0;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  z-index: 999; flex-direction: column; max-height: calc(100vh - 57px);
+  overflow-y: auto;
+}
+.mobile-nav.open { display: flex; }
+
+.mobile-section-label {
+  padding: 10px 20px 4px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: #bbb;
+}
+.mobile-nav a {
+  padding: 13px 20px; font-size: 14px; font-weight: 500;
+  color: #1a1a1a; text-decoration: none;
+  border-bottom: 1px solid #f9f3ef; transition: background 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.mobile-nav a:hover { background: #fffaf7; color: #d4845a; }
+.mobile-cart-badge {
+  background: #d4845a; color: #fff;
+  border-radius: 50%; padding: 1px 6px; font-size: 11px; font-weight: 700;
+}
+.mobile-nav-toggle {
+  padding: 13px 20px; font-size: 14px; font-weight: 600;
+  color: #1a1a1a; border-bottom: 1px solid #f9f3ef;
+  display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+}
+.mobile-nav-toggle:hover { background: #fffaf7; color: #d4845a; }
+#catArrow { font-size: 11px; transition: transform 0.25s; color: #999; }
+#catArrow.open { transform: rotate(180deg); }
+
+.mobile-cat-list { display: none; flex-direction: column; background: #fdfaf8; }
+.mobile-cat-item {
+  padding: 11px 20px 11px 34px !important;
+  font-size: 13px !important; color: #555 !important;
+  border-bottom: 1px solid #f5ede8 !important;
+}
+.mobile-cat-item:hover { color: #d4845a !important; background: #fff8f5 !important; }
+.mobile-logout {
+  padding: 13px 20px; font-size: 14px; font-weight: 600;
+  color: #c0392b !important; text-decoration: none; display: block;
+  border-top: 1px solid #f0e8e0; margin-top: 4px;
+}
+
+/* ── PRODUCTS SECTION ── */
+.products-page { padding-top: 90px; padding-bottom: 48px; }
+
+.page-header { text-align: center; margin-bottom: 28px; padding: 0 16px; }
+.page-title { font-size: 32px; font-weight: 700; color: #1a1a1a; }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.product-card {
+  background: #fff; border-radius: 14px; overflow: hidden;
+  border: 1px solid #f0e8e0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: box-shadow 0.25s, transform 0.25s; display: flex; flex-direction: column;
+}
+.product-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.09); transform: translateY(-3px); }
+
+.product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+
+.product-body { padding: 14px; display: flex; flex-direction: column; flex: 1; }
+.product-name { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 5px; }
+.product-description { font-size: 12px; color: #aaa; margin-bottom: 8px; flex: 1;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.product-price { font-size: 17px; font-weight: 700; color: #d4845a; margin-bottom: 12px; }
+
+.btn-cart {
+  display: block; width: 100%; padding: 10px;
+  border-radius: 50px; border: none; cursor: pointer;
+  text-align: center; font-weight: 600; font-size: 13px;
+  background: #1a1a1a; color: #fff; transition: background 0.2s;
+  touch-action: manipulation;
+}
+.btn-cart:hover { background: #333; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #1a1a1a; color: #fff;
+  padding: 12px 20px; border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-size: 14px; font-weight: 500;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s; z-index: 2000;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: #2d6a4f; }
+
+/* ── FOOTER ── */
+footer {
+  background: #fff; border-top: 1px solid #f0e8e0;
+  text-align: center; padding: 18px 32px;
+  font-size: 13px; color: #999;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .products-grid { padding: 0 20px; gap: 16px; }
+}
+
+@media (max-width: 768px) {
+  header { padding: 13px 18px; }
+  .logo { font-size: 20px; }
+  .nav-right { display: none; }
+  .hamburger { display: flex; }
+  .products-page { padding-top: 76px; }
+  .page-title { font-size: 26px; }
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px; padding: 0 14px;
+  }
+  .product-body { padding: 11px; }
+  .product-name { font-size: 13px; }
+  .product-price { font-size: 15px; }
+  .btn-cart { font-size: 12px; padding: 9px; }
+  footer { padding: 14px 16px; font-size: 12px; }
+  .toast { bottom: 14px; right: 12px; left: 12px; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .products-grid { gap: 10px; padding: 0 12px; }
+  .product-name { font-size: 12px; }
+  .product-price { font-size: 14px; margin-bottom: 8px; }
+  .product-description { display: none; }
+}
+
+@media (max-width: 360px) {
+  .products-grid { grid-template-columns: 1fr; }
+  .product-card { max-width: 300px; margin: 0 auto; width: 100%; }
+}
+</style>
+
+<div class="page-wrapper">
+
+<!-- HEADER -->
+<header>
+  <a href="/" class="logo">Sweet<span>Crave</span></a>
+
+  <div class="nav-right">
+    <div class="username-display">
+      {% if user.profile_pic %}
+        <img src="{{ user.profile_pic.url }}" alt="">
+      {% endif %}
+      Welcome, {{ user.username }}
+    </div>
+
+    <a href="{% url 'cart' %}" class="nav-item">
+      Cart <span class="cart-badge" id="cart-badge">{{ cart_count|default:0 }}</span>
+    </a>
+
+    <div class="nav-item dropdown">
+      Categories ▼
+      <div class="dropdown-menu">
+        {% for f in flavours %}
+          <a href="{% url 'flavour_cakes' f.id %}">{{ f.name }}</a>
+        {% empty %}
+          <a style="color:#bbb;pointer-events:none;">No categories</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="nav-item dropdown">
+      Profile ▼
+      <div class="dropdown-menu">
+        <a href="{% url 'view_profile' %}">View Profile</a>
+        <a href="{% url 'edit_profile' %}">Edit Profile</a>
+        <a href="{% url 'change_password' %}">Change Password</a>
+        <a href="{% url 'logout' %}">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobileNav">
+  
+  <a href="{% url 'cart' %}">
+    Cart <span class="mobile-cart-badge" id="mobile-cart-badge">{{ cart_count|default:0 }}</span>
+  </a>
+  <a href="{% url 'view_profile' %}">View Profile</a>
+  <a href="{% url 'edit_profile' %}">Edit Profile</a>
+  <a href="{% url 'change_password' %}">Change Password</a>
+
+  {% if flavours %}
+  
+  <a href="#" class="mobile-nav-toggle" id="catToggle" onclick="toggleCat(event)">
+    All Categories <span id="catArrow">▼</span>
+  </a>
+  <div id="catList" class="mobile-cat-list">
+    {% for f in flavours %}
+      <a href="{% url 'flavour_cakes' f.id %}" class="mobile-cat-item">{{ f.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <a href="{% url 'logout' %}" class="mobile-logout"> Logout</a>
+</nav>
+
+<!-- MAIN -->
+<div class="main-content">
+  <div class="products-page">
+    <div class="page-header">
+      <h1 class="page-title">Our Cakes</h1>
+    </div>
+
+    <div class="products-grid">
+      {% for p in products %}
+      <div class="product-card">
+        <img src="{{ p.image.url }}" alt="{{ p.name }}" class="product-img">
+        <div class="product-body">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-description">{{ p.description }}</div>
+          <div class="product-price">₹{{ p.price }}</div>
+          <button onclick="addCart({{ p.id }})" class="btn-cart">Add to Cart</button>
+        </div>
+      </div>
+      {% empty %}
+<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#bbb;">
+  <div style="font-size:44px;margin-bottom:12px;"></div>
+  {% if selected_flavour %}
+    <p style="font-size:18px;font-weight:600;color:#1a1a1a;margin-bottom:8px;">No cakes in "{{ selected_flavour.name }}" yet</p>
+    <p style="font-size:14px;">Check back soon or explore other categories!</p>
+  {% else %}
+    <p style="font-size:16px;">No cakes available yet.</p>
+  {% endif %}
+</div>
+{% endfor %}
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+function toggleCat(e) {
+  e.preventDefault(); e.stopPropagation();
+  const list = document.getElementById('catList');
+  const arrow = document.getElementById('catArrow');
+  const isOpen = list.style.display === 'flex';
+  list.style.display = isOpen ? 'none' : 'flex';
+  arrow.classList.toggle('open', !isOpen);
+}
+
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click', function(e) {
+  e.stopPropagation();
+  mobileNav.classList.toggle('open');
+});
+document.addEventListener('click', function(e) {
+  if (!mobileNav.contains(e.target) && e.target !== hamburger) {
+    mobileNav.classList.remove('open');
+  }
+});
+
+function addCart(id) {
+  fetch('/add_cart/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+    body: new URLSearchParams({ 'id': id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    showToast(data.msg, 'success');
+    document.getElementById('cart-badge').innerText = data.count;
+    document.getElementById('mobile-cart-badge').innerText = data.count;
+  })
+  .catch(() => showToast('Failed to add to cart', ''));
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.className = 'toast show ' + (type || '');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,212 @@
+{% block content %}
+
+<script>
+  (function() {
+    if (!document.querySelector('meta[name="viewport"]')) {
+      var m = document.createElement('meta');
+      m.name = 'viewport';
+      m.content = 'width=device-width, initial-scale=1.0';
+      document.head.appendChild(m);
+    }
+  })();
+</script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+
+body { background: #fffaf7; color: #1a1a1a; }
+
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 48px; background: #ffffff;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08); border-bottom: 1px solid #f0e8e0;
+}
+.logo { font-size: 26px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; text-decoration: none; }
+.logo span { color: #d4845a; }
+
+.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+
+.main-content {
+  flex: 1; padding: 100px 20px 60px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.edit-container {
+  max-width: 600px; width: 100%;
+  background: #ffffff; border-radius: 20px; padding: 40px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid #f0e8e0;
+}
+
+.edit-header {
+  text-align: center; margin-bottom: 32px;
+  padding-bottom: 24px; border-bottom: 1px solid #f0e8e0;
+}
+.edit-header h3 { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+
+.profile-pic-preview { text-align: center; margin-bottom: 24px; }
+.profile-pic-current {
+  width: 110px; height: 110px; border-radius: 50%;
+  object-fit: cover; border: 3px solid #f0e8e0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 7px; }
+
+.form-group input,
+.form-group textarea {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid #e8e0da; border-radius: 10px;
+  font-size: 16px; color: #1a1a1a; background: #fffaf8;
+  outline: none; font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #d4845a;
+  box-shadow: 0 0 0 3px rgba(212,132,90,0.12);
+  background: #fff;
+}
+.form-group input[type="file"] { padding: 10px 14px; font-size: 14px; background: #fff; cursor: pointer; }
+
+.error-message { color: #e05c5c; font-size: 12px; margin-top: 5px; }
+
+.form-actions { display: flex; gap: 12px; margin-top: 28px; }
+
+.btn {
+  flex: 1; padding: 13px 24px; border-radius: 50px; border: none;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  text-decoration: none; text-align: center;
+  transition: all 0.2s; touch-action: manipulation;
+}
+.btn-update { background: #d4845a; color: #fff; }
+.btn-update:hover { background: #bf6e44; transform: translateY(-1px); }
+.btn-cancel { background: transparent; color: #1a1a1a; border: 1.5px solid #d0ccc8; }
+.btn-cancel:hover { border-color: #1a1a1a; background: #f5f5f5; }
+
+footer {
+  background: #fff; border-top: 1px solid #f0e8e0;
+  color: #999; text-align: center; padding: 20px 48px; font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  header { padding: 13px 18px; }
+  .logo { font-size: 21px; }
+  .main-content { padding: 84px 14px 40px; }
+  .edit-container { padding: 28px 20px; border-radius: 16px; }
+  .edit-header h3 { font-size: 22px; }
+  .edit-header { margin-bottom: 22px; padding-bottom: 18px; }
+  .form-group { margin-bottom: 15px; }
+  .form-actions { flex-direction: column; gap: 10px; }
+  .btn { font-size: 15px; padding: 14px; }
+  footer { padding: 16px 14px; font-size: 12px; }
+}
+@media (max-width: 360px) {
+  .edit-container { padding: 22px 14px; }
+  .edit-header h3 { font-size: 20px; }
+}
+</style>
+
+<div class="page-wrapper">
+
+<header>
+  <a href="/" class="logo">Sweet<span>Crave</span></a>
+</header>
+
+<div class="main-content">
+  <div class="edit-container">
+
+    <div class="edit-header">
+      <h3>Edit Profile</h3>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="editProfileForm">
+      {% csrf_token %}
+
+      {% if user.profile_pic %}
+      <div class="profile-pic-preview">
+        <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="profile-pic-current">
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" value="{{ user.username }}" placeholder="Enter username" autocomplete="username" required>
+        <div class="error-message" id="username-error">{% if errors.username %}{{ errors.username }}{% endif %}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" value="{{ user.name }}" placeholder="Enter your full name" autocomplete="name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" value="{{ user.email }}" placeholder="your@gmail.com" autocomplete="email" required>
+        <div class="error-message" id="email-error">{% if errors.email %}{{ errors.email }}{% endif %}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" name="phone" value="{{ user.phone }}" placeholder="10-digit number" autocomplete="tel" required>
+        <div class="error-message" id="phone-error">{% if errors.phone %}{{ errors.phone }}{% endif %}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" name="address" value="{{ user.address }}" placeholder="Your delivery address" autocomplete="street-address">
+      </div>
+
+      <div class="form-group">
+        <label>Profile Picture</label>
+        <input type="file" name="profile_pic" accept="image/*">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-update">Update Profile</button>
+        <a href="{% url 'user_dashboard' %}" class="btn btn-cancel">Cancel</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+</div>
+
+<script>
+document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+  
+  ['username-error', 'email-error', 'phone-error'].forEach(id => {
+    document.getElementById(id).innerText = '';
+  });
+
+  let hasError = false;
+
+  const username = this.username.value.trim();
+  const email    = this.email.value.trim();
+  const phone    = this.phone.value.trim();
+
+  if (username.length < 3) {
+    document.getElementById('username-error').innerText = 'Username must be at least 3 characters.';
+    hasError = true;
+  }
+  if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
+    document.getElementById('email-error').innerText = 'Email must be a valid Gmail address.';
+    hasError = true;
+  }
+  if (!/^\d{10}$/.test(phone)) {
+    document.getElementById('phone-error').innerText = 'Phone number must be 10 digits.';
+    hasError = true;
+  }
+
+  if (hasError) e.preventDefault();
+});
+</script>
+
+{% endblock %}

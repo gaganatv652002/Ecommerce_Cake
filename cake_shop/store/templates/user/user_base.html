@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetCrave</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+
+  body { background: #fffaf7; color: #1a1a1a; }
+  .page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+  .main-content { flex: 1; padding-top: 57px; }
+
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 13px 32px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-bottom: 1px solid #f0e8e0;
+    height: 57px;
+  }
+  .logo { font-size: 22px; font-weight: 700; color: #1a1a1a; text-decoration: none; flex-shrink: 0; }
+  .logo span { color: #d4845a; }
+
+  
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+
+  .username-display {
+    font-weight: 600; color: #d4845a;
+    padding: 6px 12px; background: #fff8f5;
+    border-radius: 50px; border: 1px solid #f0e8e0;
+    font-size: 13px; display: flex; align-items: center; gap: 7px; white-space: nowrap;
+  }
+  .username-display img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+
+  .nav-item {
+    position: relative; font-weight: 500; font-size: 13px;
+    color: #1a1a1a; text-decoration: none; padding: 7px 13px;
+    border-radius: 50px; transition: all 0.2s; white-space: nowrap; cursor: pointer;
+  }
+  .nav-item:hover { background: #fffaf7; color: #d4845a; }
+
+  .cart-badge {
+    background: #d4845a; color: #fff;
+    border-radius: 50%; padding: 1px 6px;
+    font-size: 11px; margin-left: 3px; font-weight: 700;
+  }
+
+  .dropdown { position: relative; padding-bottom: 10px; }
+  .dropdown-menu {
+    display: none; position: absolute; top: 100%; right: 0;
+    margin-top: 4px; background: #fff; min-width: 175px;
+    border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border: 1px solid #f0e8e0; padding: 6px; z-index: 1001;
+  }
+  .dropdown-menu a {
+    display: block; padding: 9px 13px; text-decoration: none;
+    color: #1a1a1a; font-size: 13px; border-radius: 8px; transition: background 0.2s;
+  }
+  .dropdown-menu a:hover { background: #fffaf7; color: #d4845a; }
+  .dropdown:hover .dropdown-menu { display: block; }
+
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 6px; border: none; background: none;
+  }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: #1a1a1a; border-radius: 2px;
+  }
+
+  .mobile-nav {
+    display: none; position: fixed;
+    top: 57px; left: 0; right: 0;
+    background: #fff; border-bottom: 1px solid #f0e8e0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    z-index: 999; flex-direction: column;
+    max-height: calc(100vh - 57px); overflow-y: auto;
+  }
+  .mobile-nav.open { display: flex; }
+
+  .mobile-section-label {
+    padding: 10px 20px 4px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: #bbb;
+  }
+  .mobile-nav a {
+    padding: 13px 20px; font-size: 14px; font-weight: 500;
+    color: #1a1a1a; text-decoration: none;
+    border-bottom: 1px solid #f9f3ef; transition: background 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mobile-nav a:hover { background: #fffaf7; color: #d4845a; }
+  .mobile-cart-badge {
+    background: #d4845a; color: #fff;
+    border-radius: 50%; padding: 1px 6px; font-size: 11px; font-weight: 700;
+  }
+  .mobile-nav-toggle {
+    padding: 13px 20px; font-size: 14px; font-weight: 600; color: #1a1a1a;
+    border-bottom: 1px solid #f9f3ef;
+    display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+  }
+  .mobile-nav-toggle:hover { background: #fffaf7; color: #d4845a; }
+  #catArrow { font-size: 11px; transition: transform 0.25s; color: #999; }
+  #catArrow.open { transform: rotate(180deg); }
+  .mobile-cat-list { display: none; flex-direction: column; background: #fdfaf8; }
+  .mobile-cat-item {
+    padding: 11px 20px 11px 34px !important;
+    font-size: 13px !important; color: #555 !important;
+    border-bottom: 1px solid #f5ede8 !important;
+  }
+  .mobile-cat-item:hover { color: #d4845a !important; background: #fff8f5 !important; }
+  .mobile-logout {
+    padding: 13px 20px; font-size: 14px; font-weight: 600;
+    color: #c0392b !important; text-decoration: none; display: block;
+    border-top: 1px solid #f0e8e0;
+  }
+
+  footer {
+    background: #fff; border-top: 1px solid #f0e8e0;
+    text-align: center; padding: 16px 32px; font-size: 13px; color: #999;
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 13px 18px; }
+    .logo { font-size: 19px; }
+    .nav-right { display: none; }
+    .hamburger { display: flex; }
+    footer { padding: 14px 16px; font-size: 12px; }
+  }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<header>
+  <a href="/user_dashboard/" class="logo">Sweet<span>Crave</span></a>
+
+  <div class="nav-right">
+    <div class="username-display">
+      {% if user.profile_pic %}
+        <img src="{{ user.profile_pic.url }}" alt="">
+      {% endif %}
+      Welcome, {{ user.username }}
+    </div>
+
+    <a href="{% url 'cart' %}" class="nav-item">
+      🛒 Cart <span class="cart-badge" id="cart-badge">{{ cart_count|default:0 }}</span>
+    </a>
+
+    <div class="nav-item dropdown">
+      Categories ▼
+      <div class="dropdown-menu">
+        {% for f in flavours %}
+          <a href="{% url 'flavour_cakes' f.id %}">{{ f.name }}</a>
+        {% empty %}
+          <a style="color:#bbb;pointer-events:none;">No categories</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="nav-item dropdown">
+      Profile ▼
+      <div class="dropdown-menu">
+        <a href="{% url 'view_profile' %}">👤 View Profile</a>
+        <a href="{% url 'edit_profile' %}">✏️ Edit Profile</a>
+        <a href="{% url 'change_password' %}">🔒 Change Password</a>
+        <a href="{% url 'logout' %}">🚪 Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-section-label">Menu</div>
+  <a href="{% url 'cart' %}">
+    🛒 Cart <span class="mobile-cart-badge" id="mobile-cart-badge">{{ cart_count|default:0 }}</span>
+  </a>
+  <a href="{% url 'view_profile' %}">👤 View Profile</a>
+  <a href="{% url 'edit_profile' %}">✏️ Edit Profile</a>
+  <a href="{% url 'change_password' %}">🔒 Change Password</a>
+
+  {% if flavours %}
+  <div class="mobile-section-label">Categories</div>
+  <a href="#" class="mobile-nav-toggle" id="catToggle" onclick="toggleCat(event)">
+    All Categories <span id="catArrow">▼</span>
+  </a>
+  <div id="catList" class="mobile-cat-list">
+    {% for f in flavours %}
+      <a href="{% url 'flavour_cakes' f.id %}" class="mobile-cat-item">{{ f.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <a href="{% url 'logout' %}" class="mobile-logout">🚪 Logout</a>
+</nav>
+
+<div class="main-content">
+  {% block content %}{% endblock %}
+</div>
+
+<footer>
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+</div>
+
+<script>
+function toggleCat(e) {
+  e.preventDefault(); e.stopPropagation();
+  const list = document.getElementById('catList');
+  const arrow = document.getElementById('catArrow');
+  const isOpen = list.style.display === 'flex';
+  list.style.display = isOpen ? 'none' : 'flex';
+  arrow.classList.toggle('open', !isOpen);
+}
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click', function(e) {
+  e.stopPropagation();
+  mobileNav.classList.toggle('open');
+});
+document.addEventListener('click', function(e) {
+  if (!mobileNav.contains(e.target) && e.target !== hamburger) {
+    mobileNav.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetCrave Admin</title>
+  <style>
+    :root {
+      --cream: #fffaf7;
+      --orange: #d4845a;
+      --border: #ede4dc;
+      --sidebar-w: 240px;
+      --topbar-h: 64px;
+      --footer-h: 48px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--cream);
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: fixed; top:0; left:0; right:0;
+      height: var(--topbar-h);
+      background: rgb(252, 252, 252);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px 0 0;
+      z-index: 1000;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    }
+    .topbar-left { display: flex; align-items: center; height: 100%; }
+    .sidebar-toggle {
+      display: none;
+      width: var(--topbar-h); height: var(--topbar-h);
+      align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: #141414; font-size: 20px; flex-shrink: 0;
+    }
+    .topbar-logo {
+      display: flex; align-items: center;
+      width: var(--sidebar-w); padding-left: 24px;
+      font-size: 22px; font-weight: bold; color: #151414;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .topbar-logo span { color: var(--orange); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-logout {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 18px;
+      background: #e7e6e5;
+      border: 2px solid #ce8d54;
+      color: #ce8d54; border-radius: 50px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .topbar-logout:hover { background: rgba(218,175,125,0.2); }
+
+    .sidebar {
+      position: fixed;
+      top: var(--topbar-h); left: 0;
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--topbar-h) - var(--footer-h));
+      background: #fff;
+      border-right: 1px solid var(--border);
+      overflow-y: auto; z-index: 900;
+      transition: transform 0.3s ease;
+      display: flex; flex-direction: column;
+    }
+
+    .nav-table { width: 100%; border-collapse: collapse; }
+    .nav-table .section-row td {
+      padding: 16px 16px 6px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #bbb; background: #fff;
+    }
+    .nav-table tr.nav-row td {
+      padding: 0;
+      border-bottom: 1px solid #f5ede8;
+    }
+    .nav-table tr.nav-row a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px;
+      font-size: 14px; font-weight: 500;
+      color: #555; text-decoration: none; width: 100%;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-table tr.nav-row a:hover { background: var(--cream); color: var(--orange); }
+    .nav-table tr.nav-row a.active {
+      background: #fff5ee; color: var(--orange);
+      font-weight: 600; border-left: 3px ;
+    }
+    .nav-table tr.nav-row a .nav-icon { font-size: 16px; width: 22px; text-align: center; }
+    .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); }
+
+    .main-wrap {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topbar-h);
+      margin-bottom: var(--footer-h);
+      padding: 32px;
+      flex: 1;
+    }
+
+    .admin-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--footer-h);
+      background: #faf7f7;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+      z-index: 800;
+    }
+
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 850;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar-toggle { display: flex; }
+      .topbar-logo { width: auto; padding-left: 0; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-wrap { margin-left: 0; padding: 20px 16px; }
+      .admin-footer { font-size: 12px; }
+    }
+    @media (max-width: 500px) {
+      .main-wrap { padding: 16px 12px; }
+      .admin-footer { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+    <a href="/admin_dashboard/" class="topbar-logo">Sweet<span>Crave</span></a>
+  </div>
+  <div class="topbar-right">
+    <a href="/logout/" class="topbar-logout">Logout</a>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <table class="nav-table">
+    <tbody>
+
+      <tr class="section-row"><td></td></tr>
+      <tr class="nav-row"><td>
+        <a href="/admin_dashboard/" class="{% block nav_dashboard %}{% endblock %}">
+          <span class="nav-icon"></span> Dashboard
+        </a>
+      </td></tr>
+
+      
+      <tr class="nav-row"><td>
+        <a href="/add_category/" class="{% block nav_category %}{% endblock %}">
+          <span class="nav-icon"></span> Add Category
+        </a>
+      </td></tr>
+      <tr class="nav-row"><td>
+        <a href="/add_product/" class="{% block nav_add_product %}{% endblock %}">
+          <span class="nav-icon"></span> Add Product
+        </a>
+      </td></tr>
+      <tr class="nav-row"><td>
+        <a href="/view_products/" class="{% block nav_view_products %}{% endblock %}">
+          <span class="nav-icon"></span> View Products
+        </a>
+      </td></tr>
+
+      
+      <tr class="nav-row"><td>
+        <a href="/view_users/" class="{% block nav_users %}{% endblock %}">
+          <span class="nav-icon"></span> View Users
+        </a>
+      </td></tr>
+
+      
+
+    </tbody>
+  </table>
+
+  
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<main class="main-wrap">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="admin-footer">
+  © 2026 &nbsp;SweetCrave&nbsp;| All Rights Reserved
+</footer>
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+  document.querySelectorAll('.nav-table a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+      }
+    });
+  });
+</script>
+</body>
+</html>

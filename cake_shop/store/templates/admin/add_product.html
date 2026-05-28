@@ -1,0 +1,175 @@
+{% extends 'admin/admin_base.html' %}
+{% block nav_add_product %}active{% endblock %}
+{% block content %}
+
+<style>
+  .page-heading { margin-bottom: 28px; }
+  .page-heading h1 { font-family: Arial, sans-serif; font-size: 28px; color: #1a1a1a; font-weight: 400; }
+
+  .center-wrap { display: flex; flex-direction: column; align-items: center; }
+
+  .form-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #ede4dc;
+    box-shadow: 0 2px 16px rgba(61,43,31,0.07);
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: #444; margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid #e8e0da; border-radius: 10px;
+    font-size: 15px; color: #1a1a1a; background: #fffaf8;
+    outline: none; font-family: Arial, sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+  }
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px; cursor: pointer;
+  }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #d4845a;
+    box-shadow: 0 0 0 3px rgba(212,132,90,0.12);
+    background: #fff;
+  }
+  .form-group input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; background: #fff; }
+
+  .file-preview-wrap { margin-top: 10px; }
+  .file-preview-wrap img {
+    width: 100px; height: 100px; object-fit: cover;
+    border-radius: 10px; border: 1px solid #ede4dc; display: none;
+  }
+
+  .error-box {
+    background: #fde8e8; border: 1px solid #f5c0c0;
+    border-radius: 10px; padding: 12px 16px;
+    margin-bottom: 20px; font-size: 14px; color: #b23b3b;
+    max-width: 500px; width: 100%;
+  }
+
+  .form-actions { display: flex; gap: 12px; margin-top: 8px; }
+  .btn-submit {
+    flex: 1; padding: 14px;
+    background: #d4845a; color: #fff;
+    border: none; border-radius: 50px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: Arial, sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #bf6e44; }
+  .btn-cancel {
+    padding: 14px 24px;
+    background: #fff; color: #555;
+    border: 1.5px solid #ddd; border-radius: 50px;
+    font-size: 15px; font-weight: 600;
+    text-decoration: none; text-align: center;
+    font-family: Arial, sans-serif;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-cancel:hover { border-color: #aaa; background: #f5f5f5; }
+
+  .no-cat-note {
+    background: #fff8f0; border: 1px solid #f5d9c0;
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; color: #9a5e34; margin-top: 6px;
+  }
+  .no-cat-note a { color: #d4845a; font-weight: 600; text-decoration: none; }
+
+  @media (max-width: 520px) {
+    .form-row { grid-template-columns: 1fr; }
+    .form-card { padding: 20px 16px; }
+    .form-actions { flex-direction: column; }
+    .page-heading h1 { font-size: 22px; }
+  }
+</style>
+
+<div class="page-heading">
+  <h1>Add Product</h1>
+</div>
+
+<div class="center-wrap">
+
+  {% if error %}
+  <div class="error-box">{{ error }}</div>
+  {% endif %}
+
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data" action="/add_product/">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" name="name" value="{{ form_data.name }}" required autocomplete="off">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select name="flavour" required>
+            <option value="" disabled selected>Select category</option>
+            {% for f in flavours %}
+            <option value="{{ f.name }}" {% if form_data.flavour == f.name %}selected{% endif %}>{{ f.name }}</option>
+            {% endfor %}
+          </select>
+          {% if not flavours %}
+          <div class="no-cat-note">No categories found. <a href="/add_category/">Add one first →</a></div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label>Price </label>
+          <input type="number" name="price" value="{{ form_data.price }}" min="0" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description">{{ form_data.description }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Product Image</label>
+        <input type="file" name="image" accept="image/*" id="imageInput" onchange="previewImg(this)">
+        <div class="file-preview-wrap">
+          <img id="imgPreview" src="" alt="Preview">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Add Product</button>
+        <a href="/admin_dashboard/" class="btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+function previewImg(input) {
+  const img = document.getElementById('imgPreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+
+{% endblock %}

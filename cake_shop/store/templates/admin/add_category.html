@@ -1,0 +1,140 @@
+{% extends 'admin/admin_base.html' %}
+{% block nav_category %}active{% endblock %}
+{% block content %}
+
+<style>
+  .page-heading { margin-bottom: 28px; }
+  .page-heading h1 { font-family: Arial, sans-serif; font-size: 28px; color: #1a1a1a; font-weight: 400; }
+
+  .center-wrap { display: flex; flex-direction: column; align-items: center; }
+
+  .form-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #ede4dc;
+    box-shadow: 0 2px 16px rgba(61,43,31,0.07);
+    padding: 32px;
+    margin-bottom: 24px;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .form-group { margin-bottom: 22px; }
+  .form-group label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: #444; margin-bottom: 8px;
+  }
+  .form-group input[type="text"] {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid #e8e0da; border-radius: 10px;
+    font-size: 15px; color: #1a1a1a; background: #fffaf8;
+    outline: none; font-family: Arial, sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+  }
+  .form-group input[type="text"]:focus {
+    border-color: #d4845a;
+    box-shadow: 0 0 0 3px rgba(212,132,90,0.12);
+    background: #fff;
+  }
+
+  .btn-submit {
+    width: 100%; padding: 14px;
+    background: #d4845a; color: #fff;
+    border: none; border-radius: 50px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: Arial, sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #bf6e44; }
+
+  .alert-success {
+    padding: 14px 18px; border-radius: 10px;
+    background: #d8f5e0; color: #276c40;
+    font-size: 14px; font-weight: 500;
+    margin-bottom: 20px; border: 1px solid #b3e8c4;
+    max-width: 500px; width: 100%;
+  }
+
+  .alert-error {
+    padding: 14px 18px; border-radius: 10px;
+    background: #fde8e8; color: #b23b3b;
+    font-size: 14px; font-weight: 500;
+    margin-bottom: 20px; border: 1px solid #fbc8c8;
+    max-width: 500px; width: 100%;
+  }
+
+  .cat-list-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #ede4dc;
+    box-shadow: 0 2px 12px rgba(61,43,31,0.06);
+    overflow: hidden;
+    max-width: 500px;
+    width: 100%;
+  }
+  .cat-list-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #ede4dc;
+    font-size: 15px; font-weight: 700; color: #1a1a1a;
+  }
+  .cat-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid #f5ede8;
+    transition: background 0.15s;
+  }
+  .cat-item:last-child { border-bottom: none; }
+  .cat-item:hover { background: #fffaf7; }
+  .cat-name {
+    font-size: 14px; font-weight: 500; color: #1a1a1a;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cat-name::before { content: '🏷️'; font-size: 16px; }
+  .btn-del {
+    padding: 5px 12px; border-radius: 50px;
+    border: none; cursor: pointer; font-size: 12px; font-weight: 600;
+    background: #fde8e8; color: #b23b3b;
+    text-decoration: none; font-family: Arial, sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-del:hover { background: #fbc8c8; }
+  .empty-state { padding: 32px; text-align: center; color: #aaa; font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .form-card { padding: 20px 16px; }
+    .cat-list-card { border-radius: 12px; }
+    .page-heading h1 { font-size: 22px; }
+  }
+</style>
+
+<div class="page-heading">
+  <h1>Add Category</h1>
+</div>
+
+<div class="center-wrap">
+
+  {% if messages %}
+  {% for msg in messages %}
+    <div class="{% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+      {{ msg }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+  <div class="form-card">
+    <form method="POST" action="/add_category/">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="cat_name">Category Name</label>
+        <input type="text" id="cat_name" name="name" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn-submit">Add Category</button>
+    </form>
+  </div>
+
+ 
+
+</div>
+
+{% endblock %}

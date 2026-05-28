@@ -1,0 +1,118 @@
+{% extends 'admin/admin_base.html' %}
+{% block nav_users %}active{% endblock %}
+{% block content %}
+
+<style>
+  .page-heading { margin-bottom: 28px; }
+  .page-heading h1 { font-family: Arial, sans-serif; font-size: 28px; color: #1a1a1a; font-weight: 400; }
+  .page-heading p { color: #888; font-size: 14px; margin-top: 4px; }
+
+  .table-card {
+    border: 1px solid #ede4dc;
+    box-shadow: 0 2px 16px rgba(61,43,31,0.07);
+    overflow: hidden;
+  }
+  .table-wrap { overflow-x: auto; }
+  .data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  .data-table th {
+    padding: 12px 18px; text-align: left;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    color: #1f1d1d; background: #fdfaf8;
+    border-bottom: 1px solid #ede4dc;
+  }
+  .data-table td {
+    padding: 14px 18px; font-size: 14px; color: #333;
+    border-bottom: 1px solid #f4ede8; vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #fffaf7; }
+
+  .user-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    object-fit: cover; border: 2px solid #f0e8e0;
+  }
+  .user-avatar-placeholder {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, #f5d5c0, #e8a07a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff;
+    border: 2px solid #f0e8e0; flex-shrink: 0;
+  }
+
+  .btn-delete {
+    padding: 7px 16px; border-radius: 50px; border: none;
+    cursor: pointer; font-size: 12px; font-weight: 600;
+    background: #fde8e8; color: #b23b3b;
+    text-decoration: none; display: inline-block;
+    font-family: Arial, sans-serif; transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-delete:hover { background: #fbc8c8; }
+
+  .empty-state { padding: 52px; text-align: center; color: #bbb; }
+  .empty-state .em-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  @media (max-width: 700px) { .page-heading h1 { font-size: 22px; } }
+</style>
+
+<div class="page-heading">
+  <h1>View Users</h1>
+</div>
+
+<div class="table-card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Profile</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            {% if u.profile_pic %}
+              <img src="{{ u.profile_pic.url }}" class="user-avatar" alt="{{ u.name }}">
+            {% else %}
+              <div class="user-avatar-placeholder">{{ u.name|first|upper }}</div>
+            {% endif %}
+          </td>
+
+          <td>{{ u.name }}</td>
+
+          <td>{{ u.email }}</td>
+
+          <td>{{ u.phone|default:"—" }}</td>
+
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            {{ u.address|default:"—" }}
+          </td>
+          <td>
+            <a href="/delete_user/{{ u.id }}/" class="btn-delete">
+              Delete
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="em-icon"></div>
+              <p>No users registered yet.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout – SweetCrave</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+
+    body { background: #fffaf7; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; background: #fff;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08); border-bottom: 1px solid #f0e8e0;
+    }
+    .logo { font-size: 26px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; text-decoration: none; }
+    .logo span { color: #d4845a; }
+    .main-content { flex: 1; padding: 100px 20px 60px; display: flex; justify-content: center; }
+
+    .checkout-wrapper { width: 100%; max-width: 680px; }
+
+    .page-title {
+      font-size: 32px; font-weight: 700; color: #1a1a1a;
+      text-align: center; margin-bottom: 24px;
+    }
+    .form-card {
+      background: #fff; border-radius: 18px; padding: 36px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07); border: 1px solid #f0e8e0;
+    }
+    .section-heading {
+      font-size: 13px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: #d4845a;
+      margin-top: 0; margin-bottom: 16px;
+      padding-bottom: 0;
+    }
+    .section-divider { display: none; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 7px; }
+    .form-group input,
+    .form-group textarea {
+      width: 100%; padding: 13px 16px;
+      border: 1.5px solid #e8e0da; border-radius: 10px;
+      font-size: 16px; color: #1a1a1a; background: #fffaf8;
+      outline: none; font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #d4845a;
+      box-shadow: 0 0 0 3px rgba(212,132,90,0.12);
+      background: #fff;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .payment-options { display: flex; flex-direction: column; gap: 10px; }
+    .payment-option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border-radius: 10px;
+      border: 1.5px solid #e8e0da; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .payment-option:has(input:checked) { border-color: #d4845a; background: #fff8f5; }
+    .payment-option input[type="radio"] { accent-color: #d4845a; width: 16px; height: 16px; cursor: pointer; }
+    .payment-option label { font-size: 14px; font-weight: 500; cursor: pointer; }
+
+    .order-table { width: 100%; border-collapse: collapse; }
+    .order-table th {
+      text-align: left; padding: 10px 12px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: #999;
+    }
+    .order-table td { padding: 12px; font-size: 14px; }
+    .order-table tr:last-child td { border-bottom: none; }
+    .order-table .col-name { color: #1a1a1a; font-weight: 500; }
+    .order-table .col-qty { text-align: center; color: #666; }
+    .order-table .col-total { text-align: right; font-weight: 700; color: #d4845a; }
+
+    .grand-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 12px 0; margin-top: 4px;
+    }
+    .grand-total-label { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+    .grand-total-amount { font-size: 22px; font-weight: 700; color: #d4845a; }
+
+    .btn-group {
+      display: flex; gap: 12px; margin-top: 28px;
+    }
+    .btn-cancel {
+      flex: 1; padding: 16px; text-align: center;
+      background: #fff; color: #888;
+      border: 1.5px solid #e8e0da; border-radius: 50px;
+      font-size: 17px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.3px; text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-cancel:hover { border-color: #c0b0a8; color: #555; }
+
+    .btn-place {
+      flex: 2; padding: 16px;
+      background: #d4845a; color: #fff;
+      border: none; border-radius: 50px;
+      font-size: 17px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.3px;
+      box-shadow: 0 4px 20px rgba(212,132,90,0.35);
+      transition: background 0.2s, transform 0.15s;
+      touch-action: manipulation;
+    }
+    .btn-place:hover { background: #bf6e44; transform: translateY(-2px); }
+
+    footer {
+      background: #fff; border-top: 1px solid #f0e8e0;
+      color: #999; text-align: center; padding: 20px 48px; font-size: 13px;
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 2000;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 20px; padding: 40px 32px;
+      text-align: center; max-width: 380px; width: 100%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+      animation: popIn 0.3s cubic-bezier(.26,.86,.44,.985);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .modal-icon { font-size: 56px; margin-bottom: 16px; }
+    .modal-box h3 { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .modal-box p { font-size: 14px; color: #888; margin-bottom: 24px; }
+    .btn-modal {
+      display: inline-block; padding: 13px 36px;
+      background: #d4845a; color: #fff;
+      border-radius: 50px; text-decoration: none;
+      font-size: 15px; font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-modal:hover { background: #bf6e44; }
+
+    @media (max-width: 600px) {
+      header { padding: 13px 18px; }
+      .logo { font-size: 21px; }
+      .main-content { padding: 84px 14px 40px; }
+      .form-card { padding: 22px 18px; border-radius: 14px; }
+      .page-title { font-size: 26px; }
+      .grand-total-amount { font-size: 19px; }
+      .btn-place { font-size: 16px; padding: 15px; }
+      footer { padding: 16px 14px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Sweet<span>Crave</span></a>
+</header>
+
+<div class="main-content">
+  <div class="checkout-wrapper">
+
+    <h2 class="page-title">Checkout</h2>
+
+    <form id="orderForm" novalidate>
+      <div class="form-card">
+
+        <div class="section-heading">Delivery Details</div>
+
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" autocomplete="name" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Delivery Address</label>
+          <textarea id="address" name="address" placeholder="Enter delivery address" autocomplete="street-address" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="phone">Contact Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="10-digit number" autocomplete="tel" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="your@gmail.com" autocomplete="email" required>
+        </div>
+
+        <hr class="section-divider">
+        <div class="section-heading">Payment Method</div>
+
+        <div class="payment-options">
+          <div class="payment-option">
+            <input type="radio" name="payment" id="upi" value="upi" required>
+            <label for="upi">UPI</label>
+          </div>
+          <div class="payment-option">
+            <input type="radio" name="payment" id="netbanking" value="netbanking">
+            <label for="netbanking">Netbanking</label>
+          </div>
+          <div class="payment-option">
+            <input type="radio" name="payment" id="cod" value="cod">
+            <label for="cod">Cash on Delivery</label>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+        <div class="section-heading">Order Summary</div>
+
+        <table class="order-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th style="text-align:center;">Qty</th>
+              <th style="text-align:right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in items %}
+            <tr>
+              <td class="col-name">{{ i.product.name }}</td>
+              <td class="col-qty">{{ i.quantity }}</td>
+              <td class="col-total">₹{{ i.total_amount }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="grand-total-row">
+          <span class="grand-total-label">Total Amount</span>
+          <span class="grand-total-amount">₹{{ total }}</span>
+        </div>
+
+        <div class="btn-group">
+          <a href="/user_dashboard/" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-place">Place Order →</button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <div class="modal-icon"></div>
+    <h3>Order Placed!</h3>
+    <p>Thank you for shopping with SweetCrave.<br>Your cake is on its way!</p>
+    <a href="/user_dashboard/" class="btn-modal">Back to Dashboard</a>
+  </div>
+</div>
+
+<script>
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const fullName = document.getElementById('fullName').value.trim();
+  const address  = document.getElementById('address').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+  const email    = document.getElementById('email').value.trim();
+
+  document.querySelectorAll('.form-group input, .form-group textarea').forEach(el => {
+    el.style.borderColor = '#e8e0da';
+  });
+  document.querySelectorAll('.field-error').forEach(el => el.remove());
+
+  let hasError = false;
+
+  function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    input.style.borderColor = '#c0392b';
+    const err = document.createElement('div');
+    err.className = 'field-error';
+    err.style.cssText = 'color:#c0392b; font-size:12px; margin-top:5px; font-weight:500;';
+    err.textContent = message;
+    input.parentNode.appendChild(err);
+    hasError = true;
+  }
+
+  if (!fullName) showError('fullName', 'Please enter your full name.');
+
+  if (!address) showError('address', 'Please enter your delivery address.');
+
+  if (!phone) {
+    showError('phone', 'Please enter your contact number.');
+  } else if (!/^\d{10}$/.test(phone)) {
+    showError('phone', 'Enter a valid 10-digit mobile number .');
+  }
+
+  if (!email) {
+    showError('email', 'Please enter your email address.');
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError('email', 'Enter a valid email address.');
+  }
+
+  const paymentSelected = this.querySelector('input[name="payment"]:checked');
+  if (!paymentSelected) {
+    const paymentSection = document.querySelector('.payment-options');
+    const err = document.createElement('div');
+    err.className = 'field-error';
+    err.style.cssText = 'color:#c0392b; font-size:12px; margin-top:8px; font-weight:500;';
+    err.textContent = 'Please select a payment method.';
+
+    const old = paymentSection.parentNode.querySelector('.field-error');
+    if (old) old.remove();
+    paymentSection.parentNode.appendChild(err);
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  fetch('/place_order/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: ''
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      document.getElementById('successModal').classList.add('open');
+    }
+  })
+  .catch(() => {
+    document.getElementById('successModal').classList.add('open');
+  });
+});
+
+document.getElementById('successModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+document.querySelectorAll('.form-group input, .form-group textarea').forEach(function(el) {
+  el.addEventListener('input', function() {
+    this.style.borderColor = '#e8e0da';
+    const err = this.parentNode.querySelector('.field-error');
+    if (err) err.remove();
+  });
+});
+</script>
+</body>
+</html>

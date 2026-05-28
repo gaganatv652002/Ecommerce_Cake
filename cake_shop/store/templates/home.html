@@ -1,0 +1,380 @@
+{% block content %}
+
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+{% endblock %}
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+  }
+
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    background: #ffffff;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+
+  .logo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo span { color: #d4845a; }
+
+  .header-nav { display: flex; align-items: center; gap: 10px; }
+
+  .btn-nav {
+    padding: 9px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-signin {
+    background: transparent;
+    color: #d4845a;
+    border: 1.5px solid #d4845a;
+  }
+  .btn-signin:hover { background: #f5ebe4; }
+
+  .btn-signup {
+    background: transparent;
+    color: #d4845a;
+    border: 1.5px solid #d4845a;
+  }
+  .btn-signup:hover { background: #dcb7a4; }
+
+  .hero {
+    height: 100vh;
+    min-height: 520px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom,
+        rgba(0,0,0,0.45) 0%,
+        rgba(0,0,0,0.20) 45%,
+        rgba(0,0,0,0.60) 100%
+      ),
+      url('https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=1800&auto=format&fit=crop&q=90')
+      center / cover no-repeat;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.9s ease both;
+    padding: 0 24px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 72px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.05;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.35);
+  }
+  .hero-title span { color: #ffd6b8; }
+
+  .hero-sub {
+    font-size: 17px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.88);
+    letter-spacing: 0.3px;
+    margin-bottom: 40px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-getstarted {
+    display: inline-block;
+    background: #d4845a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 48px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 28px rgba(212,132,90,0.45);
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    touch-action: manipulation;
+  }
+  .btn-getstarted:hover {
+    background: #bf6e44;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 36px rgba(212,132,90,0.55);
+  }
+
+  .cakes-section {
+    padding: 88px 48px;
+    background: #fffaf7;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #d4845a;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 52px;
+  }
+
+  .cakes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .cake-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .cake-card.visible { opacity: 1; transform: translateY(0); }
+
+  .cake-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+  }
+  .cake-card:hover img {
+    transform: scale(1.04);
+    box-shadow: 0 10px 32px rgba(0,0,0,0.13);
+  }
+
+  .cake-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-align: center;
+  }
+
+  footer {
+    background: #ffffff;
+    border-top: 1px solid #f0e8e0;
+    color: #999;
+    text-align: center;
+    padding: 22px 48px;
+    font-size: 13px;
+    font-weight: 300;
+  }
+  footer a { color: #d4845a; text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+ 
+  @media (max-width: 1100px) {
+    .cakes-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 14px 24px; }
+    .logo { font-size: 22px; }
+    .btn-nav { padding: 8px 18px; font-size: 13px; }
+
+    .hero-title { font-size: 48px; }
+    .hero-sub { font-size: 15px; margin-bottom: 32px; }
+    .btn-getstarted { padding: 14px 40px; font-size: 15px; }
+
+    .cakes-section { padding: 64px 28px; }
+    .section-title { font-size: 32px; margin-bottom: 40px; }
+    .cakes-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  }
+
+  @media (max-width: 540px) {
+    header { padding: 13px 18px; }
+    .logo { font-size: 21px; }
+    .btn-nav { padding: 8px 14px; font-size: 12px; }
+
+    .hero-title { font-size: 38px; line-height: 1.1; }
+    .hero-sub { font-size: 14px; margin-bottom: 28px; }
+    .btn-getstarted { padding: 13px 34px; font-size: 14px; }
+
+    .cakes-section { padding: 52px 16px; }
+    .section-label { font-size: 10px; letter-spacing: 2px; }
+    .section-title { font-size: 26px; margin-bottom: 30px; }
+    .cakes-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .cake-card { gap: 8px; }
+    .cake-card img { border-radius: 14px; }
+    .cake-card-name { font-size: 12px; }
+
+    footer { padding: 18px 16px; font-size: 12px; }
+  }
+
+  @media (max-width: 400px) {
+    header { padding: 12px 14px; }
+    .logo { font-size: 19px; }
+    .btn-nav { padding: 7px 11px; font-size: 11px; }
+
+    .hero-title { font-size: 30px; }
+    .hero-sub { font-size: 13px; }
+    .btn-getstarted { padding: 12px 28px; font-size: 13px; }
+
+    .cakes-grid { gap: 10px; }
+    .cake-card img { border-radius: 12px; }
+    .cake-card-name { font-size: 11px; }
+  }
+</style>
+
+<header>
+  <a href="/" class="logo">Sweet<span>Crave</span></a>
+  <nav class="header-nav">
+    <a href="/login" class="btn-nav btn-signin">Sign In</a>
+    <a href="/register" class="btn-nav btn-signup">Sign Up</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Cakes Made With<br><span>Love & Butter</span></h1>
+    
+    <a href="/login" class="btn-getstarted">Get Started</a>
+  </div>
+</section>
+
+<section class="cakes-section">
+  <div class="section-label">Our Menu</div>
+  
+
+  <div class="cakes-grid">
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&auto=format&fit=crop&q=80" alt="Classic White Cake">
+      <div class="cake-card-name">Classic White Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&auto=format&fit=crop&q=80" alt="Rustic Naked Cake">
+      <div class="cake-card-name">Rustic Naked Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=400&auto=format&fit=crop&q=80" alt="Chocolate Drip Cake">
+      <div class="cake-card-name">Chocolate Drip Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=400&auto=format&fit=crop&q=80" alt="Floral Cream Cake">
+      <div class="cake-card-name">Floral Cream Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=400&auto=format&fit=crop&q=80" alt="Berry Topped Cake">
+      <div class="cake-card-name">Berry Topped Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=400&auto=format&fit=crop&q=80" alt="Rainbow Layer Cake">
+      <div class="cake-card-name">Rainbow Layer Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format&fit=crop&q=80" alt="Strawberry Shortcake">
+      <div class="cake-card-name">Strawberry Shortcake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1562440499-64c9a111f713?w=400&auto=format&fit=crop&q=80" alt="Vanilla Sponge Cake">
+      <div class="cake-card-name">Vanilla Sponge Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=400&auto=format&fit=crop&q=80" alt="Pink Buttercream Cake">
+      <div class="cake-card-name">Pink Buttercream Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop&q=80" alt="Gold Celebration Cake">
+      <div class="cake-card-name">Gold Celebration Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&auto=format&fit=crop&q=80" alt="Dark Chocolate Cake">
+      <div class="cake-card-name">Dark Chocolate Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400&auto=format&fit=crop&q=80" alt="Caramel Drizzle Cake">
+      <div class="cake-card-name">Caramel Drizzle Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1516054575922-f0b8eeadec1a?w=400&auto=format&fit=crop&q=80" alt="Red Velvet Cake">
+      <div class="cake-card-name">Red Velvet Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1530648672449-81f6c723e2f1?w=400&auto=format&fit=crop&q=80" alt="Lemon Zest Cake">
+      <div class="cake-card-name">Lemon Zest Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?w=400&auto=format&fit=crop&q=80" alt="Mocha Coffee Cake">
+      <div class="cake-card-name">Mocha Coffee Cake</div>
+    </div>
+    <div class="cake-card">
+      <img src="https://images.unsplash.com/photo-1540337706094-da10342c93d8?w=400&auto=format&fit=crop&q=80" alt="Blueberry Cream Cake">
+      <div class="cake-card-name">Blueberry Cream Cake</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+
+<script>
+  const cards = document.querySelectorAll('.cake-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(c => observer.observe(c));
+</script>
+
+{% endblock %}

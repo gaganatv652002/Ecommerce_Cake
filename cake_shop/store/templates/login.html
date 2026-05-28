@@ -1,0 +1,221 @@
+{% block content %}
+
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+{% endblock %}
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .logo { font-size: 26px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; text-decoration: none; }
+  .logo span { color: #d4845a; }
+  .btn-nav {
+    padding: 10px 26px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-signup { background: #d4845a; color: #fff; border: 1.5px solid #d4845a; }
+  .btn-signup:hover { background: #bf6e44; }
+
+  .login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px 48px;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.42), rgba(0,0,0,0.32)),
+      url('https://images.unsplash.com/photo-1519869325930-281384150729?w=1800&auto=format&fit=crop&q=90')
+      center / cover no-repeat fixed;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 52px 56px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.22);
+    animation: popIn 0.5s cubic-bezier(.26,.86,.44,.985) both;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .login-box h2 {
+    font-size: 34px;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .alert-danger {
+    background: #fff0ee;
+    color: #c0392b;
+    border: 1px solid #f5c6c2;
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 14px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .form-group { margin-bottom: 24px; }
+
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 9px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1.5px solid #e0d8d2;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #1a1a1a;
+    background: #fdfaf8;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus {
+    border-color: #d4845a;
+    box-shadow: 0 0 0 3px rgba(212,132,90,0.14);
+    background: #fff;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 17px;
+    background: #d4845a;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(212,132,90,0.4);
+    -webkit-appearance: none;
+    touch-action: manipulation;
+  }
+  .btn-login:hover {
+    background: #bf6e44;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212,132,90,0.5);
+  }
+
+  .divider { border: none; border-top: 1px solid #f0e8e0; margin: 30px 0; }
+
+  .login-footer { text-align: center; font-size: 15px; color: #555; }
+  .login-footer a { color: #d4845a; font-weight: 600; text-decoration: none; }
+  .login-footer a:hover { text-decoration: underline; }
+
+  .page-footer {
+    background: #fff;
+    border-top: 1px solid #f0e8e0;
+    text-align: center;
+    padding: 18px 48px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .page-footer a { color: #d4845a; text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .page-header { padding: 14px 20px; }
+    .logo { font-size: 22px; }
+    .btn-nav { padding: 9px 20px; font-size: 13px; }
+
+    .login-wrapper {
+      padding: 84px 16px 32px;
+      background-attachment: scroll;
+    }
+
+    .login-box {
+      padding: 36px 28px;
+      border-radius: 20px;
+    }
+
+    .login-box h2 { font-size: 28px; margin-bottom: 26px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group input { padding: 15px 16px; font-size: 16px; }
+    .btn-login { font-size: 16px; padding: 16px; }
+    .divider { margin: 24px 0; }
+    .login-footer { font-size: 14px; }
+  }
+
+  @media (max-width: 400px) {
+    .login-box { padding: 28px 20px; border-radius: 16px; }
+    .login-box h2 { font-size: 24px; }
+    .form-group input { padding: 14px 14px; }
+  }
+</style>
+
+<header class="page-header">
+  <a href="/" class="logo">Sweet<span>Crave</span></a>
+  <nav>
+    <a href="/register" class="btn-nav btn-signup">Sign Up</a>
+  </nav>
+</header>
+
+<div class="login-wrapper">
+  <div class="login-box">
+    <h2>Welcome Back</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {% if error %}
+      <div class="alert-danger">{{ error }}</div>
+      {% endif %}
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter your username" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-login">Login</button>
+    </form>
+    <hr class="divider">
+    <p class="login-footer">
+      New here? <a href="/register/">Create an account</a>
+    </p>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <p>© 2026 SweetCrave | All Rights Reserved</p>
+</footer>
+
+{% endblock %}
